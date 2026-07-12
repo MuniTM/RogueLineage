@@ -2,199 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Healer Checklist</title>
-<style>
-  :root{
-    --teal: #356854;
-    --teal-dark: #2a5344;
-    --red: #ff0000;
-    --gray-text: #434343;
-    --stripe: #f6f8f9;
-    --border: #e3e7e6;
-    --gold: #c8963e;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    padding:36px 24px 60px;
-    background:#eef1f0;
-    font-family: Arial, Helvetica, sans-serif;
-    color: var(--gray-text);
-    display:flex;
-    justify-content:center;
-  }
-  .page{
-    width:100%;
-    max-width:1180px;
-  }
-  h1{
-    color:var(--red);
-    font-size:30px;
-    font-weight:400;
-    margin:0 0 22px 4px;
-    letter-spacing:0.5px;
-  }
-  .layout{
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 220px;
-    gap:20px;
-    align-items:start;
-  }
-  @media (max-width: 980px){
-    .layout{ grid-template-columns: 1fr; }
-  }
-  .card{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:6px;
-    overflow:hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-  .card-header{
-    background:var(--teal);
-    color:#fff;
-    font-size:13px;
-    font-weight:bold;
-    letter-spacing:0.3px;
-    padding:10px 14px;
-    display:flex;
-    justify-content:space-between;
-  }
-  .card-header span:last-child{
-    opacity:0.85;
-    font-weight:normal;
-  }
-  ul.rows{
-    list-style:none;
-    margin:0;
-    padding:0;
-  }
-  .row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:9px 14px;
-    font-size:13.5px;
-    cursor:pointer;
-    user-select:none;
-  }
-  .row:nth-child(even){ background:var(--stripe); }
-  .row:hover{ background:#eaf1ee; }
-  .row.checked .label{ color:#7c8b86; text-decoration: line-through; }
-  .checkbox{
-    width:16px;
-    height:16px;
-    border:1.5px solid #9fb0aa;
-    border-radius:3px;
-    flex-shrink:0;
-    margin-left:10px;
-    position:relative;
-    background:#fff;
-    transition: background .12s ease, border-color .12s ease;
-  }
-  .row.checked .checkbox{
-    background:var(--teal);
-    border-color:var(--teal);
-  }
-  .row.checked .checkbox::after{
-    content:"";
-    position:absolute;
-    left:4px; top:1px;
-    width:5px; height:9px;
-    border:solid #fff;
-    border-width:0 2px 2px 0;
-    transform:rotate(45deg);
-  }
-  .label{ flex:1; padding-right:8px; }
-
-  /* Wipe row styling */
-  .wipe-row{
-    border-top:2px solid var(--border);
-    font-weight:bold;
-  }
-  .wipe-row .label{ color:var(--gray-text); }
-  .wipe-row.disabled{
-    cursor:not-allowed;
-    opacity:0.45;
-  }
-  .wipe-row.disabled:hover{ background:inherit; }
-  .wipe-row.ready .checkbox{
-    border-color: var(--gold);
-  }
-  .wipe-row.ready:hover{ background:#fff6e6; }
-
-  .hint{
-    font-size:11px;
-    padding:8px 14px 12px;
-    color:#8a8a8a;
-    font-style:italic;
-    border-top:1px solid var(--border);
-  }
-
-  /* Counter panel */
-  .counter-card{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:6px;
-    padding:18px 16px;
-    text-align:center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-  .counter-card .cap{
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    color:#8a8a8a;
-    margin-bottom:10px;
-  }
-  .counter-num{
-    font-size:44px;
-    font-weight:bold;
-    color:var(--teal);
-    line-height:1;
-  }
-  .counter-sub{
-    font-size:11px;
-    color:#a2a2a2;
-    margin-top:10px;
-  }
-  .progress-wrap{
-    margin-top:18px;
-    text-align:left;
-  }
-  .progress-label{
-    font-size:11px;
-    color:#8a8a8a;
-    margin-bottom:4px;
-    display:flex;
-    justify-content:space-between;
-  }
-  .bar-bg{
-    height:8px;
-    background:var(--stripe);
-    border-radius:4px;
-    overflow:hidden;
-    border:1px solid var(--border);
-  }
-  .bar-fill{
-    height:100%;
-    background:var(--teal);
-    width:0%;
-    transition: width .2s ease;
-  }
-  .flash{
-    animation: flashpop .5s ease;
-  }
-  @keyframes flashpop{
-    0%{ transform:scale(1); }
-    30%{ transform:scale(1.18); color:var(--gold); }
-    100%{ transform:scale(1); }
-  }
-</style>
+<title>Khei Guide</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="page">
-  <h1>Healer Checklist</h1>
+  <h1>Khei Guide</h1>
   <div class="layout">
 
     <div class="card">
@@ -225,6 +38,7 @@
         <div class="progress-label"><span>Prereqs</span><span id="progressText">0/0</span></div>
         <div class="bar-bg"><div class="bar-fill" id="progressBar"></div></div>
       </div>
+      <div class="save-status" id="saveStatus">Loading...</div>
     </div>
 
   </div>
@@ -232,10 +46,10 @@
 
 <script>
   const spells = [
-    ["Armis", true], ["Gelidus", false], ["Celeritas", true], ["Contrarium", true],
-    ["Hystericus", false], ["Ignis", true], ["Nocere", true], ["Sagitta Sol", true],
-    ["Scrupus", true], ["Telorum", true], ["Trahere", true], ["Trickstus", true],
-    ["Velo", true], ["Viribus", true]
+    ["Armis", false], ["Gelidus", false], ["Celeritas", false], ["Contrarium", false],
+    ["Hystericus", false], ["Ignis", false], ["Nocere", false], ["Sagitta Sol", false],
+    ["Scrupus", false], ["Telorum", false], ["Trahere", false], ["Trickstus", false],
+    ["Velo", false], ["Viribus", false]
   ];
   const gaia = [
     ["50 Health Potion Forcefeeds", false],
@@ -248,6 +62,49 @@
   ];
 
   let wipeCount = 0;
+  const STORAGE_KEY = "khei-guide-state";
+  let saveTimer = null;
+
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    setStatus("Saving...");
+    saveTimer = setTimeout(saveState, 250);
+  }
+
+  async function saveState(){
+    const state = { spells, gaia, khei, wipeCount };
+    try{
+      const result = await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+      setStatus(result ? "Progress saved" : "Save failed - will retry on next change");
+    }catch(e){
+      console.error("Save failed:", e);
+      setStatus("Save failed - will retry on next change");
+    }
+  }
+
+  async function loadState(){
+    try{
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if(result && result.value){
+        const state = JSON.parse(result.value);
+        applyLoaded(spells, state.spells);
+        applyLoaded(gaia, state.gaia);
+        applyLoaded(khei, state.khei);
+        if(typeof state.wipeCount === "number") wipeCount = state.wipeCount;
+      }
+    }catch(e){
+      // no saved state yet for this person, or fetch failed - start fresh
+      console.log("No saved state found, starting fresh.");
+    }
+  }
+
+  function applyLoaded(target, saved){
+    if(!Array.isArray(saved)) return;
+    saved.forEach(([name, checked]) => {
+      const match = target.find(i => i[0] === name);
+      if(match) match[1] = !!checked;
+    });
+  }
 
   function buildList(containerId, items, countId){
     const ul = document.getElementById(containerId);
@@ -260,6 +117,7 @@
         item[1] = !item[1];
         li.classList.toggle("checked", item[1]);
         refresh();
+        scheduleSave();
       });
       ul.appendChild(li);
     });
@@ -315,12 +173,27 @@
     counterEl.classList.add("flash");
 
     refresh();
+    scheduleSave();
   });
 
-  buildList("spellsList", spells, "spellsCount");
-  buildList("gaiaList", gaia, "gaiaCount");
-  buildList("kheiList", khei, "kheiCount");
-  refresh();
+  function setStatus(text){
+    const el = document.getElementById("saveStatus");
+    if(el) el.textContent = text;
+  }
+
+  async function init(){
+    setStatus("Loading your progress...");
+    await loadState();
+
+    buildList("spellsList", spells, "spellsCount");
+    buildList("gaiaList", gaia, "gaiaCount");
+    buildList("kheiList", khei, "kheiCount");
+    document.getElementById("wipeCounter").textContent = wipeCount;
+    refresh();
+    setStatus("Progress saved to your account");
+  }
+
+  init();
 </script>
 </body>
 </html>
