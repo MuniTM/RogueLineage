@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Healer Checklist</title>
+<title>Khei Guide</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="page">
-  <h1>Healer Checklist</h1>
+  <h1>Khei Guide</h1>
   <div class="layout">
 
     <div class="card">
@@ -71,29 +71,29 @@
     saveTimer = setTimeout(saveState, 250);
   }
 
-  async function saveState(){
+  function saveState(){
     const state = { spells, gaia, khei, wipeCount };
     try{
-      const result = await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
-      setStatus(result ? "Progress saved" : "Save failed - will retry on next change");
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      setStatus("Progress saved");
     }catch(e){
       console.error("Save failed:", e);
       setStatus("Save failed - will retry on next change");
     }
   }
 
-  async function loadState(){
+  function loadState(){
     try{
-      const result = await window.storage.get(STORAGE_KEY, false);
-      if(result && result.value){
-        const state = JSON.parse(result.value);
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        const state = JSON.parse(raw);
         applyLoaded(spells, state.spells);
         applyLoaded(gaia, state.gaia);
         applyLoaded(khei, state.khei);
         if(typeof state.wipeCount === "number") wipeCount = state.wipeCount;
       }
     }catch(e){
-      // no saved state yet for this person, or fetch failed - start fresh
+      // no saved state yet for this browser, or parse failed - start fresh
       console.log("No saved state found, starting fresh.");
     }
   }
