@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Khei Guide</title>
+<style>
+  :root{
+    --teal: #356854;
+    --teal-dark: #2a5344;
+    --red: #ff0000;
+    --gray-text: #434343;
+    --stripe: #f6f8f9;
+    --border: #e3e7e6;
+    --gold: #c8963e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding:36px 24px 60px;
+    background:#eef1f0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--gray-text);
+    display:flex;
+    justify-content:center;
+  }
+  .page{
+    width:100%;
+    max-width:1180px;
+  }
+  h1{
+    color:var(--red);
+    font-size:30px;
+    font-weight:400;
+    margin:0 0 22px 4px;
+    letter-spacing:0.5px;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 220px;
+    gap:20px;
+    align-items:start;
+  }
+  @media (max-width: 980px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:6px;
+    overflow:hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .card-header{
+    background:var(--teal);
+    color:#fff;
+    font-size:13px;
+    font-weight:bold;
+    letter-spacing:0.3px;
+    padding:10px 14px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .card-header span:last-child{
+    opacity:0.85;
+    font-weight:normal;
+  }
+  ul.rows{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  .row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:9px 14px;
+    font-size:13.5px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .row:nth-child(even){ background:var(--stripe); }
+  .row:hover{ background:#eaf1ee; }
+  .row.checked .label{ color:#7c8b86; text-decoration: line-through; }
+  .checkbox{
+    width:16px;
+    height:16px;
+    border:1.5px solid #9fb0aa;
+    border-radius:3px;
+    flex-shrink:0;
+    margin-left:10px;
+    position:relative;
+    background:#fff;
+    transition: background .12s ease, border-color .12s ease;
+  }
+  .row.checked .checkbox{
+    background:var(--teal);
+    border-color:var(--teal);
+  }
+  .row.checked .checkbox::after{
+    content:"";
+    position:absolute;
+    left:4px; top:1px;
+    width:5px; height:9px;
+    border:solid #fff;
+    border-width:0 2px 2px 0;
+    transform:rotate(45deg);
+  }
+  .label{ flex:1; padding-right:8px; }
+
+  /* Wipe row styling */
+  .wipe-row{
+    border-top:2px solid var(--border);
+    font-weight:bold;
+  }
+  .wipe-row .label{ color:var(--gray-text); }
+  .wipe-row.disabled{
+    cursor:not-allowed;
+    opacity:0.45;
+  }
+  .wipe-row.disabled:hover{ background:inherit; }
+  .wipe-row.ready .checkbox{
+    border-color: var(--gold);
+  }
+  .wipe-row.ready:hover{ background:#fff6e6; }
+
+  .hint{
+    font-size:11px;
+    padding:8px 14px 12px;
+    color:#8a8a8a;
+    font-style:italic;
+    border-top:1px solid var(--border);
+  }
+
+  /* Counter panel */
+  .counter-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:18px 16px;
+    text-align:center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .counter-card .cap{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:#8a8a8a;
+    margin-bottom:10px;
+  }
+  .counter-num{
+    font-size:44px;
+    font-weight:bold;
+    color:var(--teal);
+    line-height:1;
+  }
+  .counter-sub{
+    font-size:11px;
+    color:#a2a2a2;
+    margin-top:10px;
+  }
+  .progress-wrap{
+    margin-top:18px;
+    text-align:left;
+  }
+  .progress-label{
+    font-size:11px;
+    color:#8a8a8a;
+    margin-bottom:4px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .bar-bg{
+    height:8px;
+    background:var(--stripe);
+    border-radius:4px;
+    overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .bar-fill{
+    height:100%;
+    background:var(--teal);
+    width:0%;
+    transition: width .2s ease;
+  }
+  .flash{
+    animation: flashpop .5s ease;
+  }
+  @keyframes flashpop{
+    0%{ transform:scale(1); }
+    30%{ transform:scale(1.18); color:var(--gold); }
+    100%{ transform:scale(1); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Khei Guide</h1>
+  <div class="layout">
+
+    <div class="card">
+      <div class="card-header"><span>Spells</span><span id="spellsCount">0/0</span></div>
+      <ul class="rows" id="spellsList"></ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span>Gaia</span><span id="gaiaCount">0/0</span></div>
+      <ul class="rows" id="gaiaList"></ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span>Khei</span><span id="kheiCount">0/0</span></div>
+      <ul class="rows" id="kheiList"></ul>
+      <div class="row wipe-row disabled" id="wipeRow">
+        <span class="label">WIPE (check everything first)</span>
+        <div class="checkbox" id="wipeBox"></div>
+      </div>
+      <div class="hint">Check every item above to unlock Wipe. Clicking Wipe resets everything to off.</div>
+    </div>
+
+    <div class="counter-card">
+      <div class="cap">Total Wipes</div>
+      <div class="counter-num" id="wipeCounter">0</div>
+      <div class="counter-sub">cycles 1&ndash;10, then back to 0</div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Prereqs</span><span id="progressText">0/0</span></div>
+        <div class="bar-bg"><div class="bar-fill" id="progressBar"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const spells = [
+    ["Armis", true], ["Gelidus", false], ["Celeritas", true], ["Contrarium", true],
+    ["Hystericus", false], ["Ignis", true], ["Nocere", true], ["Sagitta Sol", true],
+    ["Scrupus", true], ["Telorum", true], ["Trahere", true], ["Trickstus", true],
+    ["Velo", true], ["Viribus", true]
+  ];
+  const gaia = [
+    ["50 Health Potion Forcefeeds", false],
+    ["Sick Girl / Rem's Training", false],
+    ["Max Illu", false]
+  ];
+  const khei = [
+    ["One Skill Uber", false],
+    ["5 Spire Deaths", false]
+  ];
+
+  let wipeCount = 0;
+
+  function buildList(containerId, items, countId){
+    const ul = document.getElementById(containerId);
+    items.forEach((item, idx) => {
+      const li = document.createElement("li");
+      li.className = "row" + (item[1] ? " checked" : "");
+      li.dataset.idx = idx;
+      li.innerHTML = `<span class="label">${item[0]}</span><div class="checkbox"></div>`;
+      li.addEventListener("click", () => {
+        item[1] = !item[1];
+        li.classList.toggle("checked", item[1]);
+        refresh();
+      });
+      ul.appendChild(li);
+    });
+    updateCount(items, countId);
+  }
+
+  function updateCount(items, countId){
+    const done = items.filter(i => i[1]).length;
+    document.getElementById(countId).textContent = `${done}/${items.length}`;
+  }
+
+  function allChecked(){
+    return spells.every(i => i[1]) && gaia.every(i => i[1]) && khei.every(i => i[1]);
+  }
+
+  function totalPrereqs(){
+    return spells.length + gaia.length + khei.length;
+  }
+  function doneCount(){
+    return spells.filter(i=>i[1]).length + gaia.filter(i=>i[1]).length + khei.filter(i=>i[1]).length;
+  }
+
+  function refresh(){
+    updateCount(spells, "spellsCount");
+    updateCount(gaia, "gaiaCount");
+    updateCount(khei, "kheiCount");
+
+    const wipeRow = document.getElementById("wipeRow");
+    const ready = allChecked();
+    wipeRow.classList.toggle("disabled", !ready);
+    wipeRow.classList.toggle("ready", ready);
+
+    const done = doneCount();
+    const total = totalPrereqs();
+    document.getElementById("progressText").textContent = `${done}/${total}`;
+    document.getElementById("progressBar").style.width = (total ? (done/total*100) : 0) + "%";
+  }
+
+  document.getElementById("wipeRow").addEventListener("click", () => {
+    if (!allChecked()) return;
+
+    // reset everything
+    [...spells, ...gaia, ...khei].forEach(item => item[1] = false);
+    document.querySelectorAll(".rows .row").forEach(li => li.classList.remove("checked"));
+
+    // increment counter, wrap 1-10 -> 0
+    wipeCount = wipeCount + 1;
+    if (wipeCount > 10) wipeCount = 0;
+    const counterEl = document.getElementById("wipeCounter");
+    counterEl.textContent = wipeCount;
+    counterEl.classList.remove("flash");
+    void counterEl.offsetWidth; // restart animation
+    counterEl.classList.add("flash");
+
+    refresh();
+  });
+
+  buildList("spellsList", spells, "spellsCount");
+  buildList("gaiaList", gaia, "gaiaCount");
+  buildList("kheiList", khei, "kheiCount");
+  refresh();
+</script>
+</body>
+</html>
