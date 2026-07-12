@@ -2,25 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Khei Guide</title>
+<title>Healer Checklist</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="page">
-  <h1>Khei Guide</h1>
+  <h1>Healer Checklist</h1>
   <div class="layout">
 
-    <div class="card">
+    <div class="card card-spells">
       <div class="card-header"><span>Spells</span><span id="spellsCount">0/0</span></div>
       <ul class="rows" id="spellsList"></ul>
+      <div class="row optional-row" id="manaFlyRow">
+        <span class="label">Mana Fly <em class="badge">optional</em></span>
+        <div class="checkbox" id="manaFlyBox"></div>
+      </div>
+      <div class="hint">Optional pick — equipping it fills a spell slot, so it lowers how many spells above you need checked by 1.</div>
     </div>
 
-    <div class="card">
+    <div class="card card-gaia">
       <div class="card-header"><span>Gaia</span><span id="gaiaCount">0/0</span></div>
       <ul class="rows" id="gaiaList"></ul>
     </div>
 
-    <div class="card">
+    <div class="card card-khei">
       <div class="card-header"><span>Khei</span><span id="kheiCount">0/0</span></div>
       <ul class="rows" id="kheiList"></ul>
       <div class="row wipe-row disabled" id="wipeRow">
@@ -41,6 +46,12 @@
       <div class="save-status" id="saveStatus">Loading...</div>
     </div>
 
+    <div class="card card-event-spells">
+      <div class="card-header"><span>Event Spells</span><span id="eventSpellsCount">0/0</span></div>
+      <ul class="rows" id="eventSpellsList"></ul>
+      <div class="hint">Fully optional, not required for Wipe. Each one equipped fills a spell slot, lowering how many spells you need checked by 1.</div>
+    </div>
+
   </div>
 </div>
 
@@ -54,15 +65,30 @@
   const gaia = [
     ["50 Health Potion Forcefeeds", false],
     ["Sick Girl / Rem's Training", false],
-    ["Max Illu", false]
+    ["Ultra Class", false]
   ];
   const khei = [
     ["One Skill Uber", false],
     ["5 Spire Deaths", false]
   ];
+  const eventSpells = [
+    ["Nosferatus", false],
+    ["Gourdus", false],
+    ["Vaskas", false],
+    ["Dulciferus", false],
+    ["Vir Nivis", false],
+    ["Virejas", false],
+    ["Igelti", false],
+    ["Zidinys", false],
+    ["Munificus", false],
+    ["Ferula", false],
+    ["Convivium", false]
+  ];
 
+  const BASE_SPELL_SLOTS = spells.length; // 14 - full loadout size
+  let manaFly = false;
   let wipeCount = 0;
-  const STORAGE_KEY = "khei-guide-state";
+  const STORAGE_KEY = "healer-checklist-state";
   let saveTimer = null;
 
   function scheduleSave(){
@@ -72,7 +98,7 @@
   }
 
   function saveState(){
-    const state = { spells, gaia, khei, wipeCount };
+    const state = { spells, gaia, khei, eventSpells, manaFly, wipeCount };
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       setStatus("Progress saved");
@@ -90,6 +116,8 @@
         applyLoaded(spells, state.spells);
         applyLoaded(gaia, state.gaia);
         applyLoaded(khei, state.khei);
+        applyLoaded(eventSpells, state.eventSpells);
+        if(typeof state.manaFly === "boolean") manaFly = state.manaFly;
         if(typeof state.wipeCount === "number") wipeCount = state.wipeCount;
       }
     }catch(e){
@@ -99,14 +127,14 @@
   }
 
   function applyLoaded(target, saved){
-    if(!Array.isArray(saved)) return;
+    if(!Array.isArray(target) || !Array.isArray(saved)) return;
     saved.forEach(([name, checked]) => {
       const match = target.find(i => i[0] === name);
       if(match) match[1] = !!checked;
     });
   }
 
-  function buildList(containerId, items, countId){
+  function buildList(containerId, items, countId, onToggle){
     const ul = document.getElementById(containerId);
     items.forEach((item, idx) => {
       const li = document.createElement("li");
@@ -118,6 +146,7 @@
         li.classList.toggle("checked", item[1]);
         refresh();
         scheduleSave();
+        if(onToggle) onToggle();
       });
       ul.appendChild(li);
     });
@@ -129,21 +158,42 @@
     document.getElementById(countId).textContent = `${done}/${items.length}`;
   }
 
+  // how many event spells / mana fly are eating into the 14 base slots
+  function slotsUsedElsewhere(){
+    return eventSpells.filter(i => i[1]).length + (manaFly ? 1 : 0);
+  }
+
+  function requiredBaseCount(){
+    return Math.max(0, BASE_SPELL_SLOTS - slotsUsedElsewhere());
+  }
+
+  function baseCheckedCount(){
+    return spells.filter(i => i[1]).length;
+  }
+
   function allChecked(){
-    return spells.every(i => i[1]) && gaia.every(i => i[1]) && khei.every(i => i[1]);
+    return baseCheckedCount() >= requiredBaseCount()
+      && gaia.every(i => i[1])
+      && khei.every(i => i[1]);
   }
 
   function totalPrereqs(){
-    return spells.length + gaia.length + khei.length;
+    return requiredBaseCount() + gaia.length + khei.length;
   }
   function doneCount(){
-    return spells.filter(i=>i[1]).length + gaia.filter(i=>i[1]).length + khei.filter(i=>i[1]).length;
+    const baseDone = Math.min(baseCheckedCount(), requiredBaseCount());
+    return baseDone + gaia.filter(i=>i[1]).length + khei.filter(i=>i[1]).length;
   }
 
   function refresh(){
-    updateCount(spells, "spellsCount");
+    const required = requiredBaseCount();
+    document.getElementById("spellsCount").textContent = `${baseCheckedCount()}/${required}`;
     updateCount(gaia, "gaiaCount");
     updateCount(khei, "kheiCount");
+    updateCount(eventSpells, "eventSpellsCount");
+
+    const manaFlyRow = document.getElementById("manaFlyRow");
+    manaFlyRow.classList.toggle("checked", manaFly);
 
     const wipeRow = document.getElementById("wipeRow");
     const ready = allChecked();
@@ -153,15 +203,23 @@
     const done = doneCount();
     const total = totalPrereqs();
     document.getElementById("progressText").textContent = `${done}/${total}`;
-    document.getElementById("progressBar").style.width = (total ? (done/total*100) : 0) + "%";
+    document.getElementById("progressBar").style.width = (total ? (done/total*100) : 100) + "%";
   }
+
+  document.getElementById("manaFlyRow").addEventListener("click", () => {
+    manaFly = !manaFly;
+    refresh();
+    scheduleSave();
+  });
 
   document.getElementById("wipeRow").addEventListener("click", () => {
     if (!allChecked()) return;
 
-    // reset everything
-    [...spells, ...gaia, ...khei].forEach(item => item[1] = false);
+    // reset everything (event spells and mana fly reset too, since it's a full loadout wipe)
+    [...spells, ...gaia, ...khei, ...eventSpells].forEach(item => item[1] = false);
+    manaFly = false;
     document.querySelectorAll(".rows .row").forEach(li => li.classList.remove("checked"));
+    document.getElementById("manaFlyRow").classList.remove("checked");
 
     // increment counter, wrap 1-10 -> 0
     wipeCount = wipeCount + 1;
@@ -181,16 +239,17 @@
     if(el) el.textContent = text;
   }
 
-  async function init(){
+  function init(){
     setStatus("Loading your progress...");
-    await loadState();
+    loadState();
 
     buildList("spellsList", spells, "spellsCount");
     buildList("gaiaList", gaia, "gaiaCount");
     buildList("kheiList", khei, "kheiCount");
+    buildList("eventSpellsList", eventSpells, "eventSpellsCount");
     document.getElementById("wipeCounter").textContent = wipeCount;
     refresh();
-    setStatus("Progress saved to your account");
+    setStatus("Progress saved to this browser");
   }
 
   init();
