@@ -40,9 +40,10 @@ h1{
 .card-khei{ grid-column: 3; grid-row: 1; }
 .counter-card{ grid-column: 4; grid-row: 1 / span 2; }
 .card-event-spells{ grid-column: 1 / span 3; grid-row: 2; }
+.card-godspells{ grid-column: 1 / span 3; grid-row: 3; }
 @media (max-width: 980px){
   .layout{ grid-template-columns: 1fr; }
-  .card-spells, .card-gaia, .card-khei, .counter-card, .card-event-spells{
+  .card-spells, .card-gaia, .card-khei, .counter-card, .card-event-spells, .card-godspells{
     grid-column: auto;
     grid-row: auto;
   }
