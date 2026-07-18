@@ -1,29 +1,65 @@
-:root{
+:root,
+[data-theme="dark"]{
+  --bg-top: #14112a;
+  --bg-bottom: #0d0b1c;
+  --card-bg: #1e1a37;
+  --card-bg-alt: #241f42;
+  --text: #e9e6f9;
+  --text-muted: #9d97c4;
+  --border: #342f57;
+  --stripe: #251f45;
+  --hover-row: #2c2653;
+  --primary: #8177e8;
+  --primary-dark: #5e54cf;
+  --primary-light: #a89dfb;
+  --accent-blue: #5ea3f7;
+  --gold: #e6bb70;
+  --pink: #ea7cc0;
+  --pink-border: #6b3f5c;
+  --shadow: rgba(0,0,0,0.35);
+}
+[data-theme="light"]{
+  --bg-top: #eef0fb;
+  --bg-bottom: #e7ecfa;
+  --card-bg: #ffffff;
+  --card-bg-alt: #ffffff;
+  --text: #3d3b52;
+  --text-muted: #8d89ab;
+  --border: #e2dff2;
+  --stripe: #f6f5fc;
+  --hover-row: #e9e7fb;
   --primary: #4f46c9;
   --primary-dark: #3c35a0;
   --primary-light: #7b71e0;
   --accent-blue: #2f7fe0;
-  --gray-text: #3d3b52;
-  --stripe: #f6f5fc;
-  --border: #e2dff2;
   --gold: #c8963e;
-  --bg-top: #eef0fb;
-  --bg-bottom: #e7ecfa;
+  --pink: #d1418f;
+  --pink-border: #f0a8c9;
+  --shadow: rgba(79, 70, 201, 0.08);
 }
+
 *{box-sizing:border-box;}
+html{ transition: background .2s ease; }
 body{
   margin:0;
   padding:40px 24px 64px;
   background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
   min-height:100vh;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  color: var(--gray-text);
+  color: var(--text);
   display:flex;
   justify-content:center;
+  transition: background .2s ease, color .2s ease;
 }
 .page{
   width:100%;
   max-width:1180px;
+}
+.top-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:28px;
 }
 h1{
   background: linear-gradient(90deg, var(--primary-dark), var(--primary-light) 60%, var(--accent-blue));
@@ -32,9 +68,27 @@ h1{
   color: transparent;
   font-size:36px;
   font-weight:700;
-  margin:0 0 28px 4px;
+  margin:0;
   letter-spacing:0.3px;
 }
+.theme-toggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background: var(--card-bg);
+  border:1px solid var(--border);
+  color: var(--text);
+  border-radius:999px;
+  padding:8px 16px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow: 0 2px 10px var(--shadow);
+  transition: background .2s ease, border-color .2s ease, transform .12s ease;
+}
+.theme-toggle:hover{ transform: translateY(-1px); }
+.theme-toggle .icon{ font-size:15px; line-height:1; }
+
 .layout{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr 220px;
@@ -56,11 +110,12 @@ h1{
   }
 }
 .card{
-  background:#fff;
+  background: var(--card-bg);
   border:1px solid var(--border);
   border-radius:10px;
   overflow:hidden;
-  box-shadow: 0 2px 10px rgba(79, 70, 201, 0.08);
+  box-shadow: 0 2px 10px var(--shadow);
+  transition: background .2s ease, border-color .2s ease;
 }
 .card-header{
   background: linear-gradient(100deg, var(--primary), var(--accent-blue));
@@ -73,7 +128,7 @@ h1{
   justify-content:space-between;
 }
 .card-header span:last-child{
-  opacity:0.85;
+  opacity:0.9;
   font-weight:normal;
 }
 ul.rows{
@@ -89,19 +144,20 @@ ul.rows{
   font-size:13.5px;
   cursor:pointer;
   user-select:none;
+  transition: background .15s ease;
 }
 .row:nth-child(even){ background:var(--stripe); }
-.row:hover{ background:#e9e7fb; }
-.row.checked .label{ color:#9691b8; text-decoration: line-through; }
+.row:hover{ background:var(--hover-row); }
+.row.checked .label{ color: var(--text-muted); text-decoration: line-through; }
 .checkbox{
   width:16px;
   height:16px;
-  border:1.5px solid #b3addd;
+  border:1.5px solid var(--primary-light);
   border-radius:4px;
   flex-shrink:0;
   margin-left:10px;
   position:relative;
-  background:#fff;
+  background: var(--card-bg);
   transition: background .12s ease, border-color .12s ease;
 }
 .row.checked .checkbox{
@@ -124,7 +180,7 @@ ul.rows{
   border-top:2px solid var(--border);
   font-weight:bold;
 }
-.wipe-row .label{ color:var(--gray-text); }
+.wipe-row .label{ color: var(--text); }
 .wipe-row.disabled{
   cursor:not-allowed;
   opacity:0.45;
@@ -133,12 +189,12 @@ ul.rows{
 .wipe-row.ready .checkbox{
   border-color: var(--gold);
 }
-.wipe-row.ready:hover{ background:#fdf3e2; }
+.wipe-row.ready:hover{ background: color-mix(in srgb, var(--gold) 15%, var(--card-bg)); }
 
 .hint{
   font-size:11px;
   padding:8px 14px 12px;
-  color:#8d89ab;
+  color: var(--text-muted);
   font-style:italic;
   border-top:1px solid var(--border);
 }
@@ -149,11 +205,11 @@ ul.rows{
   font-weight:bold;
 }
 .optional-row .checkbox{
-  border-color:#f0a8c9;
+  border-color: var(--pink-border);
 }
 .optional-row.checked .checkbox{
-  background: linear-gradient(135deg, #d1418f, #f0a8c9);
-  border-color:#d1418f;
+  background: linear-gradient(135deg, var(--pink), var(--pink-border));
+  border-color: var(--pink);
 }
 .badge{
   font-style:normal;
@@ -161,8 +217,8 @@ ul.rows{
   font-size:9.5px;
   text-transform:uppercase;
   letter-spacing:0.5px;
-  color:#d1418f;
-  border:1px solid #f0a8c9;
+  color: var(--pink);
+  border:1px solid var(--pink-border);
   border-radius:10px;
   padding:1px 7px;
   margin-left:8px;
@@ -170,18 +226,19 @@ ul.rows{
 
 /* Counter panel */
 .counter-card{
-  background:#fff;
+  background: var(--card-bg);
   border:1px solid var(--border);
   border-radius:10px;
   padding:18px 16px;
   text-align:center;
-  box-shadow: 0 2px 10px rgba(79, 70, 201, 0.08);
+  box-shadow: 0 2px 10px var(--shadow);
+  transition: background .2s ease, border-color .2s ease;
 }
 .counter-card .cap{
   font-size:12px;
   text-transform:uppercase;
   letter-spacing:1px;
-  color:#8d89ab;
+  color: var(--text-muted);
   margin-bottom:10px;
 }
 .counter-num{
@@ -195,7 +252,7 @@ ul.rows{
 }
 .counter-sub{
   font-size:11px;
-  color:#a8a4c4;
+  color: var(--text-muted);
   margin-top:10px;
 }
 .progress-wrap{
@@ -204,7 +261,7 @@ ul.rows{
 }
 .progress-label{
   font-size:11px;
-  color:#8d89ab;
+  color: var(--text-muted);
   margin-bottom:4px;
   display:flex;
   justify-content:space-between;
@@ -228,12 +285,12 @@ ul.rows{
 .save-status{
   margin-top:16px;
   font-size:10.5px;
-  color:#a8a4c4;
+  color: var(--text-muted);
   border-top:1px solid var(--border);
   padding-top:10px;
 }
 @keyframes flashpop{
   0%{ transform:scale(1); }
-  30%{ transform:scale(1.18); color:var(--gold); }
+  30%{ transform:scale(1.18); color: var(--gold); }
   100%{ transform:scale(1); }
 }
