@@ -3,11 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <title>Healer Checklist</title>
+<script>
+  (function(){
+    try{
+      var saved = localStorage.getItem("healer-checklist-theme");
+      document.documentElement.setAttribute("data-theme", saved === "light" ? "light" : "dark");
+    }catch(e){
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="page">
-  <h1>Healer Checklist</h1>
+  <div class="top-bar">
+    <h1>Healer Checklist</h1>
+    <button id="themeToggle" class="theme-toggle" title="Toggle dark / light mode">
+      <span class="icon">☀️</span><span class="label">Light mode</span>
+    </button>
+  </div>
   <div class="layout">
 
     <div class="card card-spells">
@@ -93,7 +108,7 @@
   const godspells = [
     ["Fimbulvetr", false],
     ["Manus Dei", false],
-    ["Sraunus", false]
+    ["Sranus", false]
   ];
 
   const BASE_SPELL_SLOTS = spells.length; // 14 - full loadout size
@@ -247,12 +262,39 @@
     scheduleSave();
   });
 
+  const THEME_KEY = "healer-checklist-theme";
+
+  function getTheme(){
+    return document.documentElement.getAttribute("data-theme") || "dark";
+  }
+
+  function applyThemeButton(theme){
+    const btn = document.getElementById("themeToggle");
+    const icon = btn.querySelector(".icon");
+    const label = btn.querySelector(".label");
+    if(theme === "dark"){
+      icon.textContent = "☀️";
+      label.textContent = "Light mode";
+    }else{
+      icon.textContent = "🌙";
+      label.textContent = "Dark mode";
+    }
+  }
+
+  document.getElementById("themeToggle").addEventListener("click", () => {
+    const next = getTheme() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem(THEME_KEY, next); }catch(e){ /* ignore */ }
+    applyThemeButton(next);
+  });
+
   function setStatus(text){
     const el = document.getElementById("saveStatus");
     if(el) el.textContent = text;
   }
 
   function init(){
+    applyThemeButton(getTheme());
     setStatus("Loading your progress...");
     loadState();
 
